@@ -41,9 +41,7 @@ const PaymentForm = ({ checkoutToken, backStep , onCaptureCheckout, nextStep, sh
             }
 
             onCaptureCheckout(checkoutToken.id, orderData);
-            console.log(checkoutToken)
-            console.log(orderData);
-            console.log(shippingData.shippingOption);
+
             nextStep();
         }
     }
