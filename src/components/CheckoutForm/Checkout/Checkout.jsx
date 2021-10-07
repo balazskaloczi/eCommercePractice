@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CssBaseline, Paper, Stepper, Step, StepLabel, Typography, CircularProgress, Divider, Button } from '@material-ui/core';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -7,7 +7,6 @@ import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
 import useStyles from './styles';
 
-//Names of the two steps
 const steps = ['Shipping address', 'Payment details'];
 
 const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
@@ -16,41 +15,40 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   const [shippingData, setShippingData] = useState({});
   const classes = useStyles();
   const history = useHistory();
-  const currentPage= useRef(history)
 
-//Functions to step forward and back with buttons
   const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
   const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
-//If there is cart ID generate a checkouttoken ,also if it was not the last step push to the home ('/')
   useEffect(() => {
-      if (cart.id) {
-        const generateToken = async () => {
-          try {
-            const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
+    if (cart.id) {
+      const generateToken = async () => {
+        try {
+          const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
 
-            setCheckoutToken(token);
-          } catch {
-            if (activeStep !== steps.length) currentPage.current.push('/');
-          }
-        };
+          setCheckoutToken(token);
+        } catch {
+          if (activeStep !== steps.length) history.push('/');
+        }
+      };
+
       generateToken();
     }
-  }, [cart,activeStep,currentPage]);
-
-//Testing history
-useEffect(() => {
-console.log(history)
-},[history])
+  }, [cart]);
 
 
-//Sets the Addresform's data to the ShippingData hook
+// Teszt 
+  useEffect(() => {
+    console.log(shippingData)
+  }, [shippingData])
+
+
+
   const test = (data) => {
     setShippingData(data);
+    console.log(data);
     nextStep();
   };
 
-//Display the Confirmation on succesfull order or displays a loading spinner
   let Confirmation = () => (order.customer ? (
     <>
       <div>
@@ -67,7 +65,6 @@ console.log(history)
     </div>
   ));
 
-// If the order is not successfull it displays the error
   if (error) {
     Confirmation = () => (
       <>
@@ -77,11 +74,11 @@ console.log(history)
       </>
     );
   }
-// Steps of the form and passing props to the form's elements
+
   const Form = () => (activeStep === 0
     ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
     : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />);
-//Checkout Component
+
   return (
     <>
       <CssBaseline />
