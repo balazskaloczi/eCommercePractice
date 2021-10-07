@@ -38,7 +38,6 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
 // Teszt 
   useEffect(() => {
-    console.log(shippingData)
   }, [shippingData])
 
 
